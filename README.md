@@ -1,2 +1,1 @@
-"# infinite-scrolling" 
-"# nested-checkboxes" 
+"# nested-checkboxes"
