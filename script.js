@@ -3,17 +3,27 @@ const interests = document.querySelectorAll(
 );
 
 const nestedInterests = function (interest) {
-  return interest.parentElement.parentElement
+  return interest?.parentElement?.parentElement
     .querySelector(".interests")
     ?.querySelectorAll(":scope > .interest >label > .interest__check");
+};
+
+const closestParent = function (interest) {
+  return interest.parentElement?.parentElement?.parentElement?.parentElement?.querySelector(
+    ":scope >label > .interest__check"
+  );
 };
 
 const toggleCheckStatus = function () {
   const nextLevelInterests = nestedInterests(this);
 
-  nextLevelInterests.forEach(
-    (interest) => (interest.checked = !interest.checked)
-  );
+  if (!nextLevelInterests) {
+    return;
+  }
+
+  nextLevelInterests.forEach((interest) => {
+    interest.checked = this.checked;
+  });
 
   nextLevelInterests.forEach((nestedInterest) => {
     const newNested = nestedInterests(nestedInterest);
@@ -24,10 +34,30 @@ const toggleCheckStatus = function () {
   });
 };
 
+const bubbleStatus = function () {
+  const parent = closestParent(this);
+  const nestedInParent = nestedInterests(parent);
+  let isAnyChecked = false;
+
+  nestedInParent.forEach((interest) => {
+    if (interest.checked) {
+      isAnyChecked = true;
+    }
+  });
+
+  parent.checked = isAnyChecked;
+  const nextParent = closestParent(parent);
+
+  if (nextParent) {
+    bubbleStatus.bind(parent)();
+  }
+};
+
 //Event Listeners
 const assignListeners = function (interestss) {
   interestss.forEach((interest) => {
     interest.addEventListener("change", toggleCheckStatus);
+    interest.addEventListener("change", bubbleStatus);
 
     const nextLevelInterests = nestedInterests(interest);
 
