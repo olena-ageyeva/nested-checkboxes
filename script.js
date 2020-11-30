@@ -36,16 +36,18 @@ const toggleCheckStatus = function () {
 
 const bubbleStatus = function () {
   const parent = closestParent(this);
+
+  if (!parent) {
+    return;
+  }
+
   const nestedInParent = nestedInterests(parent);
-  let isAnyChecked = false;
 
-  nestedInParent.forEach((interest) => {
-    if (interest.checked) {
-      isAnyChecked = true;
-    }
-  });
+  parent.checked = Array.from(nestedInParent).reduce(
+    (acc, current) => acc || current.checked,
+    false
+  );
 
-  parent.checked = isAnyChecked;
   const nextParent = closestParent(parent);
 
   if (nextParent) {
