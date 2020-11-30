@@ -14,28 +14,28 @@ const closestParent = function (interest) {
   );
 };
 
-const toggleCheckStatus = function () {
-  const nextLevelInterests = nestedInterests(this);
+const toggleCheckStatus = (interest) => {
+  const nextLevelInterests = nestedInterests(interest);
 
   if (!nextLevelInterests) {
     return;
   }
 
-  nextLevelInterests.forEach((interest) => {
-    interest.checked = this.checked;
+  nextLevelInterests.forEach((intr) => {
+    intr.checked = interest.checked;
   });
 
   nextLevelInterests.forEach((nestedInterest) => {
     const newNested = nestedInterests(nestedInterest);
 
     if (newNested) {
-      toggleCheckStatus.bind(nestedInterest)();
+      toggleCheckStatus(nestedInterest);
     }
   });
 };
 
-const bubbleStatus = function () {
-  const parent = closestParent(this);
+const bubbleStatus = (interest) => {
+  const parent = closestParent(interest);
 
   if (!parent) {
     return;
@@ -51,15 +51,15 @@ const bubbleStatus = function () {
   const nextParent = closestParent(parent);
 
   if (nextParent) {
-    bubbleStatus.bind(parent)();
+    bubbleStatus(parent);
   }
 };
 
 //Event Listeners
 const assignListeners = function (interestss) {
   interestss.forEach((interest) => {
-    interest.addEventListener("change", toggleCheckStatus);
-    interest.addEventListener("change", bubbleStatus);
+    interest.addEventListener("change", (e) => toggleCheckStatus(e.target));
+    interest.addEventListener("change", (e) => bubbleStatus(e.target));
 
     const nextLevelInterests = nestedInterests(interest);
 
